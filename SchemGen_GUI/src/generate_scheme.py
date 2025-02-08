@@ -16,13 +16,14 @@ def read_npy(path : str):
     return bool_img
 
 def read_tiff(path : str):
-    """reads a tiff stack (in ImageJ format) and returns a minecraft compatible boolean image."""
+    """reads a tiff stack (in ImageJ format z, y, x) and returns a minecraft compatible boolean image."""
     # remove color channel
     img = tifffile.imread(path)
     if img.ndim == 4:
         img = img.sum(axis=-1)
-    # rearrange axes to be minecraft (x, y, z)
-    img = np.moveaxis(img, 0, 1)
+    # rearrange axes to (x, z, y) to be compatible with Minecraft.
+    # The first axis is West->East, the second is Bottom->Top, and the last is North->South
+    img = np.moveaxis(img, 2, 0)
     bool_img = img.astype("bool") # convert to boolean
     return bool_img
 
